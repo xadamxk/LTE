@@ -23,7 +23,7 @@ function genericOnClick(info, tab) {
 
 // Context Types: https://developer.chrome.com/extensions/contextMenus#type-ContextType
 chrome.contextMenus.create({
-    "title": "Get Element Path",
+    "title": "Locate This Element",
     "contexts": ["all"],
     "id": "shadowRoot"
 });
