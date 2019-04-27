@@ -1,0 +1,39 @@
+{
+  "manifest_version": 2,
+  "name": "Locate This Element",
+  "short_name": "LTE",
+  "version": "1.0.0",
+  "icons": {
+    "16": "images/icons/16.png",
+    "32": "images/icons/32.png",
+    "48": "images/icons/48.png",
+    "128": "images/icons/128.png"
+  },
+  "version_name": "beta 1.0.0",
+  "description": "Right click an element to easily cite it for selenium based projects. Currently only supports shadowroots with IDs.",
+  "author": "xadamxk",
+  "offline_enabled": false,
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "js/modules/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "js/dependencies/jquery.min.js",
+        "js/modules/citation.js"
+      ]
+    }
+  ],
+  "permissions": [
+    "contextMenus",
+    "http://*/*"
+  ],
+  "web_accessible_resources": []
+}
