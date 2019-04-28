@@ -1,16 +1,16 @@
-{
+﻿{
   "manifest_version": 2,
   "name": "Locate This Element",
   "short_name": "LTE",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icons": {
     "16": "images/icons/16.png",
     "32": "images/icons/32.png",
     "48": "images/icons/48.png",
     "128": "images/icons/128.png"
   },
-  "version_name": "beta 1.0.0",
-  "description": "Right click an element to easily cite it for selenium based projects. Currently only supports shadowroots with IDs.",
+  "version_name": "beta 1.0.1",
+  "description": "Right click an element to easily cite it for selenium based projects. Shadowroot functionality only supports elements with IDs.",
   "author": "xadamxk",
   "offline_enabled": false,
   "background": {

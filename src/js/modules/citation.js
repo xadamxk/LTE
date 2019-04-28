@@ -54,7 +54,7 @@ function resetGlobals() {
 }
 
 function isShadowRoot(element) {
-    return (element.shadowRoot instanceof ShadowRoot);
+    return (element.hasOwnProperty('shadowRoot') ? element.shadowRoot instanceof ShadowRoot : false);
 }
 
 function getShadowRootsFromElement(element) {
@@ -71,7 +71,7 @@ document.addEventListener("mousedown", function (event) {
     }
 }, true);
 
-/* Initialize */
+/* Initialize message event listener */
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
     resetGlobals();
     if (message.functiontoInvoke == "getShadowPath") {
@@ -95,15 +95,26 @@ function findShadowPath(parentElement, pathArray) {
     } else if (!isShadowRoot(element)) { // visible dom
         endTime = performance.now();
         elementFound = true;
-        console.log("THE DARKNESS COMPELS YOU! (found element in " + (endTime - startTime) + " ms)");
-        console.log(pathArray);
-        prompt("Copy the selector path below:");
-        var path = generatePath(pathArray);
-        path ?
-            prompt("Copy the selector path below:", path) :
-            alert("The following shadowpath is missing an ID: " + path);
+        var path = "";
+        if (pathArray.length > 0) {
+            console.log("THE DARKNESS COMPELS YOU! (found element in " + (endTime - startTime) + " ms)");
+            console.log(pathArray);
+            path = generateShadowPath(pathArray);
+        } else {
+            path = generateCSSPath(element);
+        }
+        path.length > 0 ? prompt("Copy the selector path below:", path) : displayError(element);
         return;
     }
+}
+
+function displayError(element) {
+    alert("Selected element is missing an ID. Refer to console for more information.");
+    console.group("Locate That Element");
+    console.log("ERROR: The following element is missing an ID");
+    console.log("Please contact your developers.");
+    console.log(element)
+    console.groupEnd();
 }
 
 function isDesiredElementInParent(value, index, array) {
@@ -112,7 +123,7 @@ function isDesiredElementInParent(value, index, array) {
     return rect.contains(posX, posY)
 }
 
-function generatePath(elementArray) {
+function generateShadowPath(elementArray) {
     var pathString = "";
     for (var i = 0; i < elementArray.length; i++) {
         var elementID = elementArray[i].id;
@@ -128,4 +139,30 @@ function generatePath(elementArray) {
         }
     }
     return pathString;
+}
+
+function generateCSSPath(el) {
+    if (!(el instanceof Element))
+        return;
+    var path = [];
+    while (el.nodeType === Node.ELEMENT_NODE) {
+        var selector = '';
+        if (el.id) {
+            selector += '#' + el.id;
+            path.unshift(selector);
+            break;
+        } else {
+            selector = el.nodeName.toLowerCase();
+            var sib = el, nth = 1;
+            while (sib = sib.previousElementSibling) {
+                if (sib.nodeName.toLowerCase() == selector)
+                    nth++;
+            }
+            if (nth != 1)
+                selector += ":nth-of-type(" + nth + ")";
+        }
+        path.unshift(selector);
+        el = el.parentNode;
+    }
+    return path.join(" > ");
 }
