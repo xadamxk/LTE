@@ -4,6 +4,7 @@
 var posX, posY; // Selected element coordinates
 var startTime, endTime; // Timer references
 var elementFound = false;
+var windowYOffset = 0;
 
 /* Objects */
 function MyRect(x, y, w, h) {
@@ -68,6 +69,7 @@ document.addEventListener("mousedown", function (event) {
         /* Log coordinate */
         posX = event.pageX;
         posY = event.pageY;
+        windowYOffset = window.pageYOffset;
     }
 }, true);
 
@@ -81,14 +83,13 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
 });
 
 function findShadowPath(parentElement, pathArray) {
-    var element = parentElement.elementFromPoint(posX, posY);
+    var element = parentElement.elementFromPoint(posX, posY - windowYOffset);
     if (isShadowRoot(element) && !elementFound) {
         let children = getShadowRootsFromElement(element);
         if (children) {
             // var desiredChildren = children.filter(isDesiredElementInParent);
             var desiredChildren = children;
             desiredChildren.forEach((value, index, array) => {
-                // TODO: Logic to ignore overlays (zindex, what else?)
                 pathArray.push(value);
                 findShadowPath(value.shadowRoot, [...pathArray])
             });
@@ -96,13 +97,17 @@ function findShadowPath(parentElement, pathArray) {
     } else if (!isShadowRoot(element)) { // visible dom
         endTime = performance.now();
         elementFound = true;
+        pathArray.push(element);
         var path = "";
         if (pathArray.length > 0) {
-            console.log("THE DARKNESS COMPELS YOU! (found element in " + (endTime - startTime) + " ms)");
+            console.group("Locate That Element");
+            console.log("Found element in " + (endTime - startTime) + " ms. Element path stack:");
             console.log(pathArray);
+            console.groupEnd();
             path = generateShadowPath(pathArray);
         } else {
             path = generateCSSPath(element);
+            // path = generateXPath(element);
         }
         path ? prompt("Copy the selector path below:", path) : displayError(element);
         return;
@@ -121,13 +126,15 @@ function generateShadowPath(elementArray) {
         var elementID = elementArray[i].id;
         if (elementID) {
             pathString += "#" + elementID;
-            if (i < elementArray.length - 1) {
-                pathString += ";SR "
-            }
         } else {
-            console.log("Shadowroot without ID was found:");
-            console.log(elementArray[i]);
-            break;
+            // console.group("Locate That Element")
+            // console.log("Element without ID was found:");
+            // console.log(elementArray[i]);
+            // console.groupEnd();
+            pathString += generateCSSPath(elementArray[i]);
+        }
+        if (i < elementArray.length - 1) {
+            pathString += ";SR "
         }
     }
     return pathString;
