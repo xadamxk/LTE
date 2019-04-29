@@ -54,7 +54,7 @@ function resetGlobals() {
 }
 
 function isShadowRoot(element) {
-    return (element.hasOwnProperty('shadowRoot') ? element.shadowRoot instanceof ShadowRoot : false);
+    return (element.shadowRoot instanceof ShadowRoot);
 }
 
 function getShadowRootsFromElement(element) {
@@ -103,18 +103,9 @@ function findShadowPath(parentElement, pathArray) {
         } else {
             path = generateCSSPath(element);
         }
-        path.length > 0 ? prompt("Copy the selector path below:", path) : displayError(element);
+        path ? prompt("Copy the selector path below:", path) : displayError(element);
         return;
     }
-}
-
-function displayError(element) {
-    alert("Selected element is missing an ID. Refer to console for more information.");
-    console.group("Locate That Element");
-    console.log("ERROR: The following element is missing an ID");
-    console.log("Please contact your developers.");
-    console.log(element)
-    console.groupEnd();
 }
 
 function isDesiredElementInParent(value, index, array) {
@@ -165,4 +156,13 @@ function generateCSSPath(el) {
         el = el.parentNode;
     }
     return path.join(" > ");
+}
+
+function displayError(element) {
+    alert("Selected element is missing an ID. Refer to console for more information.");
+    console.group("Locate That Element");
+    console.log("ERROR: The following element is missing an ID");
+    console.log("Please contact your developers.");
+    console.log(element)
+    console.groupEnd();
 }
