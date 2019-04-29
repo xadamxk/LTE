@@ -85,7 +85,8 @@ function findShadowPath(parentElement, pathArray) {
     if (isShadowRoot(element) && !elementFound) {
         let children = getShadowRootsFromElement(element);
         if (children) {
-            var desiredChildren = children.filter(isDesiredElementInParent);
+            // var desiredChildren = children.filter(isDesiredElementInParent);
+            var desiredChildren = children;
             desiredChildren.forEach((value, index, array) => {
                 // TODO: Logic to ignore overlays (zindex, what else?)
                 pathArray.push(value);
