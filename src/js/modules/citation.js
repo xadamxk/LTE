@@ -72,6 +72,7 @@ function findShadowPath(parentElement, pathArray) {
     if (isShadowRoot(element) && !elementFound) {
         let children = getShadowRootsFromElement(element);
         if (children) {
+            // Add logic to try searching for filtered and resorting to all if no filtered results are found
             // var desiredChildren = children.filter(isDesiredElementInParent);
             children.forEach((value, index, array) => {
                 pathArray.push(value);
@@ -92,9 +93,29 @@ function findShadowPath(parentElement, pathArray) {
         } else {
             path = generateCSSPath(element);
         }
-        path ? prompt("Copy the selector path below:", path) : displayError(element);
+        path ? prompt("Copy the selector path below (CTRL+C):", path) : displayError(element);
+        historyLog(path);
         return;
     }
+}
+
+function historyLog(path) {
+    chrome.storage.local.get({
+        'LTE_History': []
+    },
+        function (data) {
+            var storageObj = data['LTE_History'];
+            storageObj.push(path);
+            chrome.storage.local.set({
+                'LTE_History': storageObj.slice(0, 10)
+            }, function () {
+            });
+        }
+    );
+}
+
+function historyUpdate(array, path) {
+
 }
 
 function isDesiredElementInParent(value, index, array) {
