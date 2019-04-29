@@ -20,6 +20,25 @@ function MyRect(x, y, w, h) {
     }
 }
 
+/* Event listeners */
+document.addEventListener("mousedown", function (event) {
+    // Right click
+    if (event.button == 2) {
+        /* Log coordinate & offset */
+        posX = event.pageX;
+        posY = event.pageY;
+        windowYOffset = window.pageYOffset;
+    }
+}, true);
+
+chrome.extension.onMessage.addListener(function (message, sender, callback) {
+    resetGlobals();
+    if (message.functiontoInvoke == "getShadowPath") {
+        startTime = performance.now();
+        findShadowPath(document, []);
+    }
+});
+
 /* Functions */
 function walkDOM(main) {
     var arr = [];
@@ -35,20 +54,6 @@ function walkDOM(main) {
     return arr;
 }
 
-function clickElementByCords(x, y) {
-    var ev = document.createEvent("MouseEvent");
-    var el = document.elementFromPoint(x, y);
-    ev.initMouseEvent(
-        "click",
-        true /* bubble */, true /* cancelable */,
-        window, null,
-        x, y, 0, 0, /* coordinates */
-        false, false, false, false, /* modifier keys */
-        0 /*left*/, null
-    );
-    el.dispatchEvent(ev);
-}
-
 function resetGlobals() {
     startTime, endTime = null;
     elementFound = false;
@@ -62,39 +67,18 @@ function getShadowRootsFromElement(element) {
     return walkDOM(element).filter(x => isShadowRoot(x));
 }
 
-/* Right click event listener */
-document.addEventListener("mousedown", function (event) {
-    // Right click
-    if (event.button == 2) {
-        /* Log coordinate */
-        posX = event.pageX;
-        posY = event.pageY;
-        windowYOffset = window.pageYOffset;
-    }
-}, true);
-
-/* Initialize message event listener */
-chrome.extension.onMessage.addListener(function (message, sender, callback) {
-    resetGlobals();
-    if (message.functiontoInvoke == "getShadowPath") {
-        startTime = performance.now();
-        findShadowPath(document, []);
-    }
-});
-
 function findShadowPath(parentElement, pathArray) {
     var element = parentElement.elementFromPoint(posX, posY - windowYOffset);
     if (isShadowRoot(element) && !elementFound) {
         let children = getShadowRootsFromElement(element);
         if (children) {
             // var desiredChildren = children.filter(isDesiredElementInParent);
-            var desiredChildren = children;
-            desiredChildren.forEach((value, index, array) => {
+            children.forEach((value, index, array) => {
                 pathArray.push(value);
                 findShadowPath(value.shadowRoot, [...pathArray])
             });
         }
-    } else if (!isShadowRoot(element)) { // visible dom
+    } else if (!isShadowRoot(element)) {
         endTime = performance.now();
         elementFound = true;
         pathArray.push(element);
@@ -107,7 +91,6 @@ function findShadowPath(parentElement, pathArray) {
             path = generateShadowPath(pathArray);
         } else {
             path = generateCSSPath(element);
-            // path = generateXPath(element);
         }
         path ? prompt("Copy the selector path below:", path) : displayError(element);
         return;
