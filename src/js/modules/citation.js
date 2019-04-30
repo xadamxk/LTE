@@ -100,22 +100,29 @@ function findShadowPath(parentElement, pathArray) {
 }
 
 function historyLog(path) {
+    // chrome.storage.local.clear();
     chrome.storage.local.get({
         'LTE_History': []
     },
         function (data) {
             var storageObj = data['LTE_History'];
-            storageObj.push(path);
+            var date = new Date();
+            var tempLog = {
+                path: path,
+                timestamp: date.getTime(),
+                page: document.title,
+            }
+            storageObj.push(tempLog);
             chrome.storage.local.set({
-                'LTE_History': storageObj.slice(0, 10)
+                'LTE_History': storageObj.sort(compare).reverse().slice(0, 10)
             }, function () {
             });
         }
     );
 }
 
-function historyUpdate(array, path) {
-
+function compare(a, b) {
+    return a.timestamp - b.timestamp;
 }
 
 function isDesiredElementInParent(value, index, array) {

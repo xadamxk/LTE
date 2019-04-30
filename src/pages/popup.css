@@ -10,3 +10,18 @@
 ::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.5);
 }
+
+.popupBody {
+    width: 250px;
+    margin: 10px;
+    text-align: right;
+    background-color: #F0F2F5;
+}
+
+.popupHeaderMain {
+    color: #00557D;
+}
+
+.popupHeaderSub {
+    color: #006798;
+}
