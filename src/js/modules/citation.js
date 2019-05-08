@@ -219,7 +219,7 @@ function generateCSSPath(el) {
     while (el.nodeType === Node.ELEMENT_NODE) {
         var selector = '';
         if (el.id) {
-            selector += '#' + el.id;
+            selector += el.nodeName.toLowerCase() + '#' + el.id;
             path.unshift(selector);
             break;
         } else {
