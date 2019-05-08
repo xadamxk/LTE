@@ -1,5 +1,10 @@
 /* Global Variables */
 var globaltabs;
+const showForPages = [
+    "*://*.bbvacompass.com/*",
+    "*://*.polymer-project.org/*",
+    "*://*.compassbnk.com/*"
+];
 
 function genericOnClick(info, tab) {
     /* DEBUG INFO */
@@ -13,6 +18,7 @@ function genericOnClick(info, tab) {
         "currentWindow": true
     }, function (tabs) {
         globaltabs = tabs;
+        console.log(tabs);
         // Message passing API
         chrome.tabs.sendMessage(tabs[0].id, {
             functiontoInvoke: "getShadowPath",
@@ -25,7 +31,8 @@ function genericOnClick(info, tab) {
 chrome.contextMenus.create({
     "title": "Locate This Element",
     "contexts": ["all"],
-    "id": "shadowRoot"
+    "id": "shadowRoot",
+    "documentUrlPatterns": showForPages
 });
 
 chrome.contextMenus.onClicked.addListener(genericOnClick);
