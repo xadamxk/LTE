@@ -2,14 +2,14 @@
   "manifest_version": 2,
   "name": "Locate This Element",
   "short_name": "LTE",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "icons": {
     "16": "images/icons/16.png",
     "32": "images/icons/32.png",
     "48": "images/icons/48.png",
     "128": "images/icons/128.png"
   },
-  "version_name": "beta 1.1.0",
+  "version_name": "1.2.0-beta",
   "description": "Right click an element to easily cite as CSS Selector for Selenium projects. Clicking the extension icon displays selection history.",
   "author": "xadamxk",
   "offline_enabled": false,
@@ -33,7 +33,9 @@
     {
       "run_at": "document_end",
       "matches": [
-        "<all_urls>"
+        "*://*.bbvacompass.com/*",
+        "*://*.polymer-project.org/*",
+        "*://*.compassbnk.com/*"
       ],
       "js": [
         "js/dependencies/jquery.min.js",
@@ -43,7 +45,6 @@
   ],
   "permissions": [
     "contextMenus",
-    "http://*/*",
     "storage"
   ],
   "web_accessible_resources": []
