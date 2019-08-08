@@ -7,7 +7,6 @@
 1. Right click desired element
 2. Select 'Locate this Element' from action menu
 3. Copy contents of alert (this is the Selenium citation)
-4. History of last 10 citations can be found by clicking the extension
 
 ## Features
 - Quick citations for selenium based projects
